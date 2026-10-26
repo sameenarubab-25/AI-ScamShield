@@ -1,0 +1,384 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI ScamShield | Scam Detector</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f7fc;
+            color: #172033;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #101b35;
+            color: white;
+            padding: 20px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 750;
+            letter-spacing: -0.5px;
+        }
+
+        .brand span {
+            color: #60a5fa;
+        }
+
+        .header-label {
+            color: #cbd5e1;
+            font-size: 13px;
+        }
+
+        main {
+            width: 90%;
+            max-width: 850px;
+            margin: 48px auto;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            color: #2563eb;
+            background: #dbeafe;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: clamp(30px, 5vw, 42px);
+            letter-spacing: -1.3px;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: #64748b;
+            line-height: 1.7;
+            max-width: 560px;
+            margin: auto;
+        }
+
+        .scanner-card,
+        .result-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+        }
+
+        .section-title {
+            font-size: 19px;
+            margin-bottom: 8px;
+        }
+
+        .section-description {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-weight: 650;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 165px;
+            resize: vertical;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 15px;
+            font: inherit;
+            font-size: 14px;
+            line-height: 1.7;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px #dbeafe;
+        }
+
+        .input-help {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 9px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .result-card {
+            margin-top: 28px;
+        }
+
+        .result-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .risk-heading {
+            color: #64748b;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 750;
+        }
+
+        .risk-badge.high {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .risk-badge.caution {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        .risk-badge.low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .risk-badge.uncertain,
+        .risk-badge.unavailable {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .result-section {
+            margin-top: 22px;
+        }
+
+        .result-section h3 {
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+
+        .ai-result {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            line-height: 1.8;
+            font-size: 14px;
+            padding: 18px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+
+        .warning-list {
+            list-style: none;
+        }
+
+        .warning-list li {
+            position: relative;
+            padding: 12px 14px 12px 36px;
+            margin-bottom: 9px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 9px;
+            color: #9a3412;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .warning-list li::before {
+            content: "!";
+            position: absolute;
+            left: 13px;
+            top: 12px;
+            font-weight: 800;
+        }
+
+        .note {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px 15px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 18px 5%;
+            }
+
+            main {
+                width: 92%;
+                margin: 30px auto;
+            }
+
+            .scanner-card,
+            .result-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="brand">AI <span>ScamShield</span></div>
+        <a href="/history" style="color: #bfdbfe; text-decoration: none;">
+    Scan History
+</a>
+<a href="/url-checker"
+   style="color: #bfdbfe; text-decoration: none;">
+    URL Checker
+</a>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="eyebrow">SMART SCAM DETECTION</div>
+            <h1>Think Before You Click.</h1>
+            <p>
+                Check suspicious messages using AI analysis and
+                rule-based detection. Identify warning signs before
+                sharing personal information.
+            </p>
+        </section>
+
+        <section class="scanner-card">
+            <h2 class="section-title">Message Scanner</h2>
+            <p class="section-description">
+                Paste an SMS, email, or suspicious message below
+                to assess its potential risk.
+            </p>
+
+            <form method="POST">
+                <label for="message">Message to analyze</label>
+
+                <textarea
+                    id="message"
+                    name="message"
+                    placeholder="Paste your suspicious message here..."
+                    required
+                >{{ message }}</textarea>
+
+                <p class="input-help">
+                    Tip: Include the complete message for better context.
+                </p>
+
+                <button type="submit">Analyze Message</button>
+            </form>
+        </section>
+
+        {% if ai_result %}
+        <section class="result-card">
+            <div class="result-top">
+                <h2 class="section-title">Analysis Results</h2>
+
+                <div>
+                    <div class="risk-heading">ASSESSED RISK LEVEL</div>
+                    <span class="risk-badge
+                        {% if ai_risk == 'High' %}
+                            high
+                        {% elif ai_risk == 'Medium' %}
+                            caution
+                        {% elif ai_risk == 'Low' %}
+                            low
+                        {% elif ai_risk == 'Unavailable' %}
+                            unavailable
+                        {% else %}
+                            uncertain
+                        {% endif %}">
+                        {{ ai_risk }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="result-section">
+                <h3>AI Assessment</h3>
+                <div class="ai-result">{{ ai_result }}</div>
+            </div>
+
+            <div class="result-section">
+                <h3>Rule-Based Warning Signs</h3>
+                <ul class="warning-list">
+                    {% for warning in warnings %}
+                        <li>{{ warning }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <p class="note">
+                AI assessments can be incorrect. A low-risk result
+                does not guarantee that a message is safe. Never
+                share an OTP or password in response to an unsolicited
+                message. Verify suspicious requests through official
+                channels.
+            </p>
+        </section>
+        {% endif %}
+    </main>
+
+    <footer>
+        AI ScamShield · An AI-assisted message safety project
+    </footer>
+</body>
+</html>

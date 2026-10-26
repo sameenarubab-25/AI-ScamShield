@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan History | AI ScamShield</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f7fc;
+            color: #172033;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #101b35;
+            color: white;
+            padding: 20px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 750;
+        }
+
+        .brand span {
+            color: #60a5fa;
+        }
+
+        a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        header a {
+            color: #bfdbfe;
+        }
+
+        main {
+            width: 90%;
+            max-width: 900px;
+            margin: 40px auto;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .history-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 16px;
+            overflow-wrap: anywhere;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .date {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .risk {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .high {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .medium {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        .low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .uncertain,
+        .unavailable {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        h3 {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .message,
+        .analysis {
+            white-space: pre-wrap;
+            line-height: 1.7;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        .analysis {
+            background: #f8fafc;
+            border-radius: 9px;
+            padding: 14px;
+        }
+
+        .delete-button {
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 9px;
+            padding: 11px 16px;
+            cursor: pointer;
+            font-weight: 650;
+        }
+
+        .empty {
+            text-align: center;
+            background: white;
+            padding: 45px 20px;
+            border-radius: 14px;
+            color: #64748b;
+            line-height: 1.8;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 18px 5%;
+            }
+
+            main {
+                width: 92%;
+                margin: 28px auto;
+            }
+
+            .history-card {
+                padding: 17px;
+            }
+        }
+        .download-button {
+    display: inline-block;
+    margin: 0 0 20px;
+    padding: 11px 16px;
+    background: #2563eb;
+    color: white;
+    text-decoration: none;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.download-button:hover {
+    background: #1d4ed8;
+}
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="brand">AI <span>ScamShield</span></div>
+        <a href="/">Message Scanner</a>
+    </header>
+
+    <main>
+        <a class="back-link" href="/">← Back to Scanner</a>
+
+        <h1>Scan History</h1>
+        <p class="subtitle">
+            Review messages you've analyzed previously.
+            Your scan records are saved locally.
+        </p>
+
+        {% if scans %}
+            <form
+                method="POST"
+                action="/delete-history"
+                onsubmit="return confirm('Delete all scan history? This cannot be undone.');"
+                style="margin-bottom: 24px;"
+            >
+                <button class="delete-button" type="submit">
+                    Clear All History
+                </button>
+            </form>
+
+            {% for scan in scans %}
+                <article class="history-card">
+                    <div class="card-top">
+                        <span class="date">
+                            Scan #{{ scan['id'] }} · {{ scan['scanned_at'] }}
+                        </span>
+
+                        <span class="risk {{ scan['risk']|lower }}">
+                            {{ scan['risk'] }} Risk
+                        </span>
+                    </div>
+
+                    <h3>Original Message</h3>
+                    <div class="message">{{ scan['message'] }}</div>
+
+                    <h3>AI Assessment</h3>
+                    <div class="analysis">{{ scan['analysis'] }}</div>
+                    <a href="{{ url_for('download_report', scan_id=scan['id']) }}"
+   class="download-button">
+    Download PDF Report
+</a>
+
+                    <h3>Rule-Based Warning Signs</h3>
+                    <ul style="padding-left: 22px; line-height: 1.8;">
+                        {% for warning in scan['warnings']|from_json %}
+                            <li>{{ warning }}</li>
+                        {% endfor %}
+                    </ul>
+                </article>
+            {% endfor %}
+        {% else %}
+            <div class="empty">
+                <h3>No scans yet</h3>
+                Your analyzed messages will appear here.
+                <p style="margin-top: 16px;">
+                    <a href="/">Analyze your first message →</a>
+                </p>
+            </div>
+        {% endif %}
+    </main>
+</body>
+</html>
